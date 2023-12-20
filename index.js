@@ -7,13 +7,23 @@ const app = express();
 const port = 4000;
 
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 // create a product schema
 
 const productsSchema = new mongoose.Schema({
-  title: String,
-  price: Number,
-  description: String,
+  title:{
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  description:{
+    type: String,
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -43,22 +53,17 @@ app.get("/", (req, res) => {
   res.send("Welcome to home page of the server");
 });
 
-app.post("/products", (req, res) => {
+app.post("/products", async(req, res) => {
   try {
+    const newProduct = new Product({
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+    });
 
-    
-// get data from req body
+  const productData = await newProduct.save();
 
-    const title = req.body.title;
-    const price = req.body.price;
-    const description = req.body.description;
-
-
-
-
-
-
-    res.status(201).send({title, price, description});
+    res.status(201).send(productData);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
