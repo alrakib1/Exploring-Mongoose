@@ -9,7 +9,7 @@ const port = 4000;
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-// create a product schema
+// create a product schema (document)
 
 const productsSchema = new mongoose.Schema({
   title:{
@@ -30,7 +30,7 @@ const productsSchema = new mongoose.Schema({
   },
 });
 
-// create product model
+// create product model (collection)
 
 const Product = mongoose.model("Products", productsSchema);
 
@@ -53,6 +53,10 @@ app.get("/", (req, res) => {
   res.send("Welcome to home page of the server");
 });
 
+// Crud operation
+
+// Create
+
 app.post("/products", async(req, res) => {
   try {
     const newProduct = new Product({
@@ -68,3 +72,7 @@ app.post("/products", async(req, res) => {
     res.status(500).send({ message: error.message });
   }
 });
+
+
+
+// Read
