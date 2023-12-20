@@ -7,22 +7,22 @@ const app = express();
 const port = 4000;
 
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 // create a product schema (document)
 
 const productsSchema = new mongoose.Schema({
-  title:{
+  title: {
     type: String,
-    required: true
+    required: true,
   },
   price: {
     type: Number,
-    required: true
+    required: true,
   },
-  description:{
+  description: {
     type: String,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
@@ -57,7 +57,7 @@ app.get("/", (req, res) => {
 
 // Create
 
-app.post("/products", async(req, res) => {
+app.post("/products", async (req, res) => {
   try {
     const newProduct = new Product({
       title: req.body.title,
@@ -65,7 +65,7 @@ app.post("/products", async(req, res) => {
       description: req.body.description,
     });
 
-  const productData = await newProduct.save();
+    const productData = await newProduct.save();
 
     res.status(201).send(productData);
   } catch (error) {
@@ -73,6 +73,29 @@ app.post("/products", async(req, res) => {
   }
 });
 
-
-
 // Read
+
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find();
+    if (products) {
+      return res.status(200).send(products);
+    }
+  } catch (error) {
+    res.status(404).send({ message: "Products not found" });
+  }
+});
+
+
+// Get specific data by id
+
+app.get('/products/:id',async(req,res)=>{
+  try {
+    
+    const id 
+
+
+  } catch (error) {
+    
+  }
+})
