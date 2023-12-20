@@ -123,3 +123,32 @@ app.get("/products/:id", async (req, res) => {
 // adding select can filter which things you want to see from the object
 
 //  we can also do the same thing inside find one after writing the object of id we can write another object inside find and give it key name and value of 1 to get only that  part from document , if we don't want to show anything then we can simply add value of that key as 0;
+
+
+
+//  Comparison operator
+
+app.get("/less", async (req, res) => {
+  try {
+    const products = await Product.find({ price: { $eq: 300 } });
+    if (products) {
+      return res.status(200).send({
+        success: true,
+        message: "return all products",
+        data: products,
+      });
+    }
+  } catch (error) {
+    res.status(404).send({
+      success: false,
+      message: "Products not found",
+    });
+  }
+});
+
+//  we can add custom value to get products as per requirement with query. for example here we get the products that are less 300 .  have used $lt query for it.
+
+// we can use gt to $get value that are greater than 300. If we want exactly same thing then we use $eq
+
+
+
