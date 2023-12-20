@@ -79,23 +79,47 @@ app.get("/products", async (req, res) => {
   try {
     const products = await Product.find();
     if (products) {
-      return res.status(200).send(products);
+      return res.status(200).send({
+        success: true,
+        message: "return all products",
+        data: products,
+      });
     }
   } catch (error) {
-    res.status(404).send({ message: "Products not found" });
+    res.status(404).send({
+      success: false,
+      message: "Products not found",
+    });
   }
 });
 
+// Get specific data by id (using query)
 
-// Get specific data by id
-
-app.get('/products/:id',async(req,res)=>{
+app.get("/products/:id", async (req, res) => {
   try {
-    
-    const id 
+    const id = req.params.id;
 
+    // const product = await Product.findOne({ _id: id }).select({title:1, price:1,_id:0});
+    // const product = await Product.findOne({ _id: id },{title:1});
 
+    const product = await Product.findOne({ _id: id });
+    if (product) {
+      return res.status(200).send({
+        success: true,
+        message: "return single product",
+        data: product,
+      });
+    }
   } catch (error) {
-    
+    res.status(404).send({
+      success: false,
+      message: "Product not found",
+    });
   }
-})
+});
+
+// find will return an array and findOne will return an object
+
+// adding select can filter which things you want to see from the object
+
+//  we can also do the same thing inside find one after writing the object of id we can write another object inside find and give it key name and value of 1 to get only that  part from document , if we don't want to show anything then we can simply add value of that key as 0;
