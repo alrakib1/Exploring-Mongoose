@@ -178,13 +178,15 @@ app.get("/and", async (req, res) => {
   try {
     // const price = req.query.price;
 
-    const price = 400; // used fixed value for testing
+    // const price = 400; // used fixed value for testing
+    const price = req.query.price;
+    const rating = req.query.rating;
 
     let products;
     // console.log(req.query)
-    if (price) {
+    if (price && rating) {
       products = await Product.find({
-        $and: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
+        $and: [{ price: { $gte: price } }, { rating: { $gte: rating } }],
       });
     } else {
       products = await Product.find();
@@ -222,9 +224,9 @@ app.get("/or", async (req, res) => {
     if (price) {
       products = await Product.find({
         $or: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
-      });
+      }).countDocuments();
     } else {
-      products = await Product.find();
+      products = await Product.find().countDocuments();
     }
     if (products) {
       return res.status(200).send({
@@ -250,14 +252,15 @@ app.get("/nor", async (req, res) => {
   try {
     // const price = req.query.price;
 
-    const price = 400; // used fixed value for testing
+    const price = req.query.price;
+const rating = req.query.rating;
 
 
     let products;
     // console.log(req.query)
     if (price) {
       products = await Product.find({
-        $nor: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
+        $nor: [{ price: { $gte: price } }, { rating: { $gte: rating} }],
       });
     } else {
       products = await Product.find();
@@ -276,3 +279,5 @@ app.get("/nor", async (req, res) => {
     });
   }
 });
+
+//  we can count total document using document count at the end of the find method.
