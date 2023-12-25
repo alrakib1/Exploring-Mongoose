@@ -20,6 +20,10 @@ const productsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  rating: {
+    type: Number,
+    required: true,
+  },
   description: {
     type: String,
     required: true,
@@ -66,6 +70,7 @@ app.post("/products", async (req, res) => {
     const newProduct = new Product({
       title: req.body.title,
       price: req.body.price,
+      rating: req.body.rating,
       description: req.body.description,
     });
 
@@ -173,7 +178,7 @@ app.get("/and", async (req, res) => {
   try {
     // const price = req.query.price;
 
-    const price = 400;
+    const price = 400; // used fixed value for testing
 
     let products;
     // console.log(req.query)
@@ -209,7 +214,7 @@ app.get("/or", async (req, res) => {
   try {
     // const price = req.query.price;
 
-    const price = 400;
+    const price = 400; // used fixed value for testing
 
 
     let products;
@@ -217,6 +222,42 @@ app.get("/or", async (req, res) => {
     if (price) {
       products = await Product.find({
         $or: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
+      });
+    } else {
+      products = await Product.find();
+    }
+    if (products) {
+      return res.status(200).send({
+        success: true,
+        message: "return all products",
+        data: products,
+      });
+    }
+  } catch (error) {
+    res.status(404).send({
+      success: false,
+      message: "Products not found",
+    });
+  }
+});
+
+
+// $nor 
+
+// nor will return data which have don't have either of the condition
+
+app.get("/nor", async (req, res) => {
+  try {
+    // const price = req.query.price;
+
+    const price = 400; // used fixed value for testing
+
+
+    let products;
+    // console.log(req.query)
+    if (price) {
+      products = await Product.find({
+        $nor: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
       });
     } else {
       products = await Product.find();
