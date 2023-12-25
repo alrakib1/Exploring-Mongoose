@@ -218,7 +218,6 @@ app.get("/or", async (req, res) => {
 
     const price = 400; // used fixed value for testing
 
-
     let products;
     // console.log(req.query)
     if (price) {
@@ -226,7 +225,7 @@ app.get("/or", async (req, res) => {
         $or: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
       }).countDocuments();
     } else {
-      products = await Product.find().countDocuments();
+      products = await Product.find().sort({ price: 1 });
     }
     if (products) {
       return res.status(200).send({
@@ -243,8 +242,7 @@ app.get("/or", async (req, res) => {
   }
 });
 
-
-// $nor 
+// $nor
 
 // nor will return data which have don't have either of the condition
 
@@ -253,14 +251,13 @@ app.get("/nor", async (req, res) => {
     // const price = req.query.price;
 
     const price = req.query.price;
-const rating = req.query.rating;
-
+    const rating = req.query.rating;
 
     let products;
     // console.log(req.query)
     if (price) {
       products = await Product.find({
-        $nor: [{ price: { $gte: price } }, { rating: { $gte: rating} }],
+        $nor: [{ price: { $gte: price } }, { rating: { $gte: rating } }],
       });
     } else {
       products = await Product.find();
@@ -281,3 +278,37 @@ const rating = req.query.rating;
 });
 
 //  we can count total document using document count at the end of the find method.
+
+
+// sort
+
+
+app.get("/sort", async (req, res) => {
+  try {
+    // const price = req.query.price;
+
+    const price = 400; // used fixed value for testing
+
+    let products;
+    // console.log(req.query)
+    if (price) {
+      products = await Product.find({
+        $or: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
+      }).sort({price: -1}).select({title: 1, _id:0});
+    } else {
+      products = await Product.find().sort({ price: -1 });   //sorted the response  data based on the price of the document (value: 1 is acceding and -1 is descending in order) we can also add select here to project only those part of the data we want 
+    }
+    if (products) {
+      return res.status(200).send({
+        success: true,
+        message: "return all products",
+        data: products,
+      });
+    }
+  } catch (error) {
+    res.status(404).send({
+      success: false,
+      message: "Products not found",
+    });
+  }
+});
