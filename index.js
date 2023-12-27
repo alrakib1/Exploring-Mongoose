@@ -53,7 +53,7 @@ const connectDB = async () => {
 //
 
 app.listen(port, async () => {
-  console.log(`server running on port : ${port}`);
+  console.log(`server running on: http://localhost:${port}`);
   await connectDB(); //connect to db after server has started
 });
 
@@ -118,12 +118,14 @@ app.get("/products/:id", async (req, res) => {
         message: "return single product",
         data: product,
       });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "Product not found with this id",
+      });
     }
   } catch (error) {
-    res.status(404).send({
-      success: false,
-      message: "Product not found",
-    });
+    res.send({ message: error.message });
   }
 });
 
@@ -279,9 +281,7 @@ app.get("/nor", async (req, res) => {
 
 //  we can count total document using document count at the end of the find method.
 
-
 // sort
-
 
 app.get("/sort", async (req, res) => {
   try {
@@ -294,9 +294,11 @@ app.get("/sort", async (req, res) => {
     if (price) {
       products = await Product.find({
         $or: [{ price: { $gte: price } }, { rating: { $gte: 4 } }],
-      }).sort({price: -1}).select({title: 1, _id:0});
+      })
+        .sort({ price: -1 })
+        .select({ title: 1, _id: 0 });
     } else {
-      products = await Product.find().sort({ price: -1 });   //sorted the response  data based on the price of the document (value: 1 is acceding and -1 is descending in order) we can also add select here to project only those part of the data we want 
+      products = await Product.find().sort({ price: -1 }); //sorted the response  data based on the price of the document (value: 1 is acceding and -1 is descending in order) we can also add select here to project only those part of the data we want
     }
     if (products) {
       return res.status(200).send({
@@ -312,3 +314,31 @@ app.get("/sort", async (req, res) => {
     });
   }
 });
+
+//  delete document
+
+// delete single data
+
+app.delete("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await Product.findByIdAndDelete({ _id: id }); //simple delete method
+    if (product) {
+      res.status(200).send({
+        success: true,
+        message: "single product deleted",
+        data: product,
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "Products not deleted with this id",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// delete one only return that product was deleted. but findByIdAndDelete return which product was deleted
+
