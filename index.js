@@ -340,5 +340,41 @@ app.delete("/products/:id", async (req, res) => {
   }
 });
 
-// delete one only return that product was deleted. but findByIdAndDelete return which product was deleted
+// deleteOne only return that product was deleted. but findByIdAndDelete return which product was deleted.
 
+// update
+
+// put
+
+app.put("/products/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedProduct = await Product.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          rating: 4.8,
+        }
+      },
+      {
+        new: true
+      }
+    );
+    if (updatedProduct) {
+      res.status(200).send({
+        success: true,
+        message: "single product updated",
+        data: updatedProduct,
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "Product was not updated with this id",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// updateOne one only return that product was updated. but findByIdUpdate return which product was updated by default it won't show realtime modified data. we have to add {new: true} at the end of it
