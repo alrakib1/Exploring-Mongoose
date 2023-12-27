@@ -14,16 +14,27 @@ app.use(express.urlencoded({ extended: true }));
 const productsSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: [true, "product title is required"],
+    minLength: [3, "minimum title length should be 3"],
+    maxLength: [20, "maximum title length should be 10"],
+    trim: true,
   },
   price: {
     type: Number,
     required: true,
+    min: [50, "minimum price should be 50"],
+    max: [2000, "maximum price should be 2000"],
   },
   rating: {
     type: Number,
     required: true,
   },
+  
+  // email: {
+  //   type: String,
+  //   unique: true,  //for email validation we can use unique true for user data
+  // }
+  // ,
   description: {
     type: String,
     required: true,
@@ -125,7 +136,7 @@ app.get("/products/:id", async (req, res) => {
       });
     }
   } catch (error) {
-    res.send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -349,15 +360,19 @@ app.delete("/products/:id", async (req, res) => {
 app.put("/products/:id", async (req, res) => {
   try {
     const id = req.params.id;
+
     const updatedProduct = await Product.findByIdAndUpdate(
       { _id: id },
       {
         $set: {
-          rating: 4.8,
-        }
+          title: req.body.title,
+          description: req.body.description,
+          rating: req.body.rating,
+          price: req.body.price,
+        },
       },
       {
-        new: true
+        new: true,
       }
     );
     if (updatedProduct) {
